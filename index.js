@@ -12,11 +12,15 @@ const config = YAML.parse(fs.readFileSync(configPath, 'utf8'))
 
 async function exec () {
   try {
-    const result = await new Action({
+    console.log("Creating action...")
+    const action = new Action({
       githubEvent,
       argv: parseArgs(),
       config,
-    }).execute()
+    })
+
+    console.log("Executing action...")
+    const result = await action.execute()
 
     if (result) {
       console.log(`Detected issueKey: ${result.issue}`)
@@ -36,14 +40,19 @@ async function exec () {
 
     console.log('No issue keys found.')
   } catch (error) {
-    core.setFailed(error.toString())
+    core.setFailed(error)
   }
 }
 
-function parseArgs () {
-  return {
-    string: core.getInput('string') || config.string,
-    from: core.getInput('from'),
+function parseArgs() {
+  try {
+    return {
+      string: core.getInput('string') || config.string,
+      from: core.getInput('from'),
+    }
+  } catch (error) {
+    console.log("Error parsing args: " + error.toString())
+    throw error
   }
 }
 

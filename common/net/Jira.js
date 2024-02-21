@@ -1,5 +1,3 @@
-const { get } = require('lodash')
-
 const serviceName = 'jira'
 const { format } = require('url')
 const client = require('./client')(serviceName)
@@ -31,7 +29,7 @@ class Jira {
 
       return res
     } catch (error) {
-      if (get(error, 'res.status') === 404) {
+      if (error.res.status == 404) {
         return
       }
 
